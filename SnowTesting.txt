@@ -1,2 +1,1 @@
-Once user selects a business service with the "Ticket" as the call type and clicks on update button it will redirects to the service gateway page. Then application will fetch the TKT details based on the "tktsysid" provided in the url and populates the description, short description and the requester name in the service gateway.
-Changed
+Once user selects a business service with the "Ticket" as the call type and clicks on update button it will redirects to the service gateway page. Then application will fetch the TKT details based on the "tktsysid" provided in the url and populates the description, short description and the requester name in the service gateway portal page.
