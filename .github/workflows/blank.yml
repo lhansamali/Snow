@@ -1,0 +1,47 @@
+name: Close stale pull requests
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs every day at midnight
+
+jobs:
+  close-stale-prs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close stale pull requests
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { Octokit } = require("@octokit/rest");
+            const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+            
+            const staleDays = 7; // Number of days before a PR is considered stale
+            const { data: pullRequests } = await octokit.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open'
+            });
+
+            const now = new Date();
+            for (const pr of pullRequests) {
+              const updatedAt = new Date(pr.updated_at);
+              const daysSinceUpdate = (now - updatedAt) / (1000 * 60 * 60 * 24);
+
+              if (daysSinceUpdate > staleDays) {
+                await octokit.pulls.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: pr.number,
+                  state: 'closed'
+                });
+
+                await octokit.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pr.number,
+                  body: `This pull request has been automatically closed because it has not been reviewed in ${staleDays} days.`
+                });
+              }
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
