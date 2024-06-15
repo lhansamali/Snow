@@ -14,11 +14,14 @@ on:
   workflow_dispatch:
 
 jobs:
-  auto-close-pr:
+  stale-prs:
     runs-on: ubuntu-latest
     steps:
-      - name: Close stale pull requests
-        uses: actions/close-all-pull-requests@v1
+      - name: Mark and close stale pull requests
+        uses: actions/stale@v4
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          message: "Closing pull request as it has not been reviewed within a week."
+          days-before-stale: 7
+          days-before-close: 7
+          stale-pr-message: 'This PR has been inactive for a week. It will be closed if no further activity occurs.'
+          close-pr-message: 'Closing this PR due to inactivity.'
