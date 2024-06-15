@@ -4,11 +4,9 @@ name: CI
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "master" branch
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+ schedule:
+    # Runs at 00:00 every Sunday
+    - cron: '0 0 * * 0'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -23,5 +21,5 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           days-before-stale: 1
           days-before-close: 1
-          stale-pr-message: 'This PR has been inactive for a week. It will be closed if no further activity occurs.'
+          stale-pr-message: 'This PR has been inactive for a day. It will be closed if no further activity occurs.'
           close-pr-message: 'Closing this PR due to inactivity.'
