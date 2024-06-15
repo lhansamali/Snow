@@ -14,45 +14,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  auto-close-pr:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Close stale pull requests
-        uses: actions/github-script@v6
+        uses: actions/close-all-pull-requests@v1
         with:
-          script: |
-            const staleDays = 7; // Number of days before a PR is considered stale
-
-            const pullRequests = await github.pulls.list({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open'
-            });
-
-            const now = new Date();
-            for (const pr of pullRequests.data) {
-              const updatedAt = new Date(pr.updated_at);
-              const daysSinceUpdate = (now - updatedAt) / (1000 * 60 * 60 * 24);
-
-              if (daysSinceUpdate > staleDays) {
-                await github.pulls.update({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  pull_number: pr.number,
-                  state: 'closed'
-                });
-
-                await github.issues.createComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: pr.number,
-                  body: `This pull request has been automatically closed because it has not been reviewed in ${staleDays} days.`
-                });
-              }
-            }
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          message: "Closing pull request as it has not been reviewed within a week."
